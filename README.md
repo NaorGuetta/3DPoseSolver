@@ -8,12 +8,14 @@ Below are some photos showcasing the results of our 3D rendering and pose estima
 ### Teapot Scene Before and After EPnP Overlay
 <div style="display: flex; justify-content: space-around; align-items: center;">
     <div style="text-align: center;">
-        <h4>Photo was taken:</h4>
-        <img src="https://github.com/NaorGuetta/3DPoseSolver/blob/master/3DSolverImg/image3.png" alt="photo was taken" width="400"/>
+        <h4>Scene Snapshot:</h4>
+        <img src="https://github.com/NaorGuetta/3DPoseSolver/blob/master/3DSolverImg/image3.png" alt="photo was taken 1" width="300"/>
+        <img src="https://github.com/NaorGuetta/3DPoseSolver/blob/master/3DSolverImg/image1.png" alt="photo was taken 2" width="300"/>
     </div>
     <div style="text-align: center;">
         <h4>Solve position and overlay result:</h4>
-        <img src="https://github.com/NaorGuetta/3DPoseSolver/blob/master/3DSolverImg/image4.png" alt="Solve position and overlay result" width="400"/>
+        <img src="https://github.com/NaorGuetta/3DPoseSolver/blob/master/3DSolverImg/image4.png" alt="Solve position 1" width="300"/>
+        <img src="https://github.com/NaorGuetta/3DPoseSolver/blob/master/3DSolverImg/image2.png" alt="Solve position 2" width="300"/>
     </div>
 </div>
 
