@@ -4,16 +4,19 @@
 #include "globals.h" 
 #include "pnp.h"
 
-void drawCameraViewTriangle(const glm::vec3& position, const glm::vec3& direction, bool flag) {
+void drawCameraViewTriangle(const glm::vec3& position, const glm::vec3& direction, int flag) {
     glm::vec3 right = glm::normalize(glm::cross(direction, cameraUp)) * 0.1f;
     glm::vec3 up = glm::normalize(glm::cross(right, direction)) * 0.1f;
 
     glDisable(GL_LIGHTING);
-    if (flag) {
-        glColor3f(0.824f, 0.016f, 0.176f); //red
+    if (flag == 1) {
+        glColor3f(0.824f, 0.016f, 0.176f); //currentChosen , red
     }
-    else {
-        glColor3f(0.373f, 0.62f, 0.627f); // not red
+    else if(flag == 0){
+        glColor3f(0.373f, 0.62f, 0.627f); // others , blue
+    }
+    else if (flag == 2 || flag == 3) {
+        glColor3f(0.941f, 0.502f, 0.251f); // estimated , orange
     }
 
     glBegin(GL_TRIANGLES);
@@ -21,6 +24,16 @@ void drawCameraViewTriangle(const glm::vec3& position, const glm::vec3& directio
     glVertex3f(position.x + direction.x * 0.4f + right.x, position.y + direction.y * 0.4f + right.y, position.z + direction.z * 0.4f + right.z);
     glVertex3f(position.x + direction.x * 0.4f - right.x, position.y + direction.y * 0.4f - right.y, position.z + direction.z * 0.4f - right.z);
     glEnd();
+
+    // Draw black border if flag % 2 == 1
+    if (flag % 2 == 1) {
+        glColor3f(0.0f, 0.0f, 0.0f); // black color
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(position.x, position.y, position.z);
+        glVertex3f(position.x + direction.x * 0.4f + right.x, position.y + direction.y * 0.4f + right.y, position.z + direction.z * 0.4f + right.z);
+        glVertex3f(position.x + direction.x * 0.4f - right.x, position.y + direction.y * 0.4f - right.y, position.z + direction.z * 0.4f - right.z);
+        glEnd();
+    }
     glEnable(GL_LIGHTING);
 }
 
@@ -59,7 +72,7 @@ struct CameraState saveCameraState() {
     state.image = std::move(image);
 
 
-    std::cout << "Camera state saved. Total saved states: " << savedCameraStates.size() << std::endl;
+    std::cout << "Camera state saved. Total saved states: " << mySavedCaptures.captures.size() << std::endl;
     std::cout << "Camera Position: (" << cameraPos.x << ", " << cameraPos.y << ", " << cameraPos.z << ")" << std::endl;
     std::cout << "Camera Front: (" << cameraFront.x << ", " << cameraFront.y << ", " << cameraFront.z << ")" << std::endl;
     std::cout << "Yaw: " << yaw << std::endl;
@@ -69,21 +82,11 @@ struct CameraState saveCameraState() {
 }
 
 
-
-void loadCameraImage(GLFWwindow* window) {
-    currentCameraStateIndex = (currentCameraStateIndex) % savedCameraStates.size();
-    CameraState state = savedCameraStates[currentCameraStateIndex];
-
-    std::vector<unsigned char> image = state.image;
-
-    glDrawPixels(WIDTH / 2, HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, image.data());
-}
-
 void loadNextCameraState() {
-    if (!savedCameraStates.empty()) {
+    if (!mySavedCaptures.captures.empty()) {
         // Load the next camera state
-        currentCameraStateIndex = (currentCameraStateIndex) % savedCameraStates.size();
-        CameraState state = savedCameraStates[currentCameraStateIndex];
+        currentCameraStateIndex = (currentCameraStateIndex) % mySavedCaptures.captures.size();
+        CameraState state = mySavedCaptures.captures[currentCameraStateIndex];
         cameraPos = state.position;
         cameraFront = state.front;
         yaw = state.yaw;
@@ -109,8 +112,8 @@ void loadNextCameraState() {
 
 
 void updateCamera() {
-    const float cameraSpeed = 0.005f;
-    constexpr float rotationSpeed = glm::radians(0.05f);
+    const float cameraSpeed = 0.05f;
+    constexpr float rotationSpeed = glm::radians(0.5f);
     bool positionChanged = false;
 
     if (keyState.W) {
@@ -173,7 +176,10 @@ void loadCameraWithParam(glm::vec3 calculatedPos, float calcYaw, float calcPitch
     cameraPnpSol = saveCameraState();
 }
 
-void calculateEstimate() {
+// sends the data the pnp via estimateCameraPose function, translates the output into a cameraState struct we can use
+struct CameraState calculateEstimate() { 
+    struct CameraState estimated;
+    //PNP
     std::pair<glm::vec3, glm::vec2> result = estimateCameraPose();
     glm::vec3 first = result.first;
     glm::vec2 second = result.second;
@@ -186,4 +192,5 @@ void calculateEstimate() {
     estimated.front = cameraFront1;
     estimated.pitch = second.y;
     estimated.yaw = second.x;
+    return estimated;
 }

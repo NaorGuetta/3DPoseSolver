@@ -52,15 +52,9 @@ struct KeyState {
     bool Down = false;
 };
 
-struct ClickCoords {
-    double x;
-    double y;
-};
-
-// Vector to store all click coordinates
-extern std::vector<ClickCoords> clickCoordinates;
 
 extern KeyState keyState;
+
 
 // Saved camera states
 extern std::vector<CameraState> savedCameraStates;
@@ -85,7 +79,7 @@ struct ClickData {
     void addLeftClick(double xpos, double ypos) {
         numLeft++;
         leftSideClicks.emplace_back(xpos, ypos);
-        std::cout << "Saved click at: (" << xpos << ", " << ypos << ")" << std::endl;
+        //std::cout << "Saved click at: (" << xpos << ", " << ypos << ")" << std::endl;
     }
 
     void addRightClick(const glm::vec3& clickWorldPos) {
@@ -95,22 +89,23 @@ struct ClickData {
         }
         numRight++;
         rightSideClicks.push_back(clickWorldPos);
-        std::cout << "Picked point in 3D space: (" << clickWorldPos.x << ", " << clickWorldPos.y << ", " << clickWorldPos.z << ")" << std::endl;
+        //std::cout << "Picked point in 3D space: (" << clickWorldPos.x << ", " << clickWorldPos.y << ", " << clickWorldPos.z << ")" << std::endl;
     }
+};
+
+struct savedCapturesWithEstimate {
+    std::vector<struct CameraState> captures;
+    std::vector<struct CameraState> estimates;
 };
 
 extern ClickData myClickData;
 
-struct Sphere {
-    glm::vec3 center;
-    float radius;
-};
+extern savedCapturesWithEstimate mySavedCaptures;
 
-// Declare global variables
-extern std::vector<Sphere> spheres;
+
 
 // Color definitions
-extern glm::vec3 colors[8];
+extern glm::vec3 colors[21];
 
 enum class Mode {
     NONE,
@@ -123,8 +118,12 @@ extern Mode currentMode;
 
 extern bool captureflag;
 
-extern CameraState estimated;
+extern bool updated;
+
+
 extern std::vector<CameraState> saveEstimatedPnp;
+
+extern std::vector<glm::vec3> pointsVec;
 
 
 #endif // GLOBALS_H

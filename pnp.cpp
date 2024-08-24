@@ -7,10 +7,11 @@ float aspectRatio = static_cast<float>(WIDTH / 2) / HEIGHT;
 float fovRad = glm::radians(fov);
 float fy = (HEIGHT / 2.0f) / tan(fovRad / 2.0f);
 float fx = fy * aspectRatio;
-const float cx = WIDTH / 4;
-const float cy = HEIGHT / 2;
+const float cx = WIDTH / 4;     //center x of right side viewpoint
+const float cy = HEIGHT / 2;    //center y of right side viewpoint
 
 
+// Convert glm::vec2 to cv::Point2f
 std::vector<cv::Point2f> convertToCvPoint2f(const std::vector<glm::vec2>& points) {
     std::vector<cv::Point2f> cvPoints;
     for (const auto& point : points) {
@@ -28,7 +29,7 @@ std::vector<cv::Point3f> convertToCvPoint3f(const std::vector<glm::vec3>& points
     return cvPoints;
 }
 
-
+// takes 2 vectors of 2d and 3d points from the myClickData struct, returns the camera position, yaw and pitch after PNP
 std::pair<glm::vec3, glm::vec2> estimateCameraPose() {
     std::vector<cv::Point2f> imagePoints = convertToCvPoint2f(myClickData.leftSideClicks);
     std::vector<cv::Point3f> objectPoints = convertToCvPoint3f(myClickData.rightSideClicks);
@@ -37,7 +38,7 @@ std::pair<glm::vec3, glm::vec2> estimateCameraPose() {
     cv::Mat distCoeffs = cv::Mat::zeros(4, 1, CV_64F); // Assuming no distortion
 
     cv::Mat rvec, tvec;
-    bool success = cv::solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec, false, cv::SOLVEPNP_EPNP);
+    bool success = cv::solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec, false, cv::SOLVEPNP_EPNP); // cv::SOLVEPNP_EPNP or cv::SOLVEPNP_ITERATIVE in the last argument
     if (!success) {
         std::cerr << "solvePnP failed to find a solution." << std::endl;
         return { glm::vec3(0.0f), glm::vec2(0.0f, 0.0f) };
@@ -45,7 +46,8 @@ std::pair<glm::vec3, glm::vec2> estimateCameraPose() {
 
     cv::Mat R;
     cv::Rodrigues(rvec, R);
-    std::cout << R << std::endl;
+    cv::Mat R2;
+    cv::Rodrigues(rvec, R2);
     cv::Mat adjustY = (cv::Mat_<double>(3, 3) << 1, 0, 0,
         0, -1, 0,
         0, 0, 1);
@@ -64,8 +66,6 @@ std::pair<glm::vec3, glm::vec2> estimateCameraPose() {
     );
 
     glm::vec3 cameraPosition = -glm::transpose(rotationMatrix) * translation;
-
-    // Calculate yaw and pitch from the rotation matrix
     glm::vec3 front;
     front.x = rotationMatrix[2][0];
     front.y = rotationMatrix[2][1];
@@ -74,6 +74,31 @@ std::pair<glm::vec3, glm::vec2> estimateCameraPose() {
 
     float yaw1 = glm::degrees(atan2(front.z, front.x));
     float pitch1 = glm::degrees(asin(front.y));
+
+    if (cameraPosition.z < 0) {
+        glm::mat3 rotationMatrix1(
+            R2.at<double>(0, 0), R2.at<double>(0, 1), R2.at<double>(0, 2),
+            R2.at<double>(1, 0), R2.at<double>(1, 1), R2.at<double>(1, 2),
+            R2.at<double>(2, 0), R2.at<double>(2, 1), R2.at<double>(2, 2)
+        );
+
+        glm::vec3 translation(
+            tvec.at<double>(0),
+            tvec.at<double>(1),
+            tvec.at<double>(2)
+        );
+
+        cameraPosition = -glm::transpose(rotationMatrix1) * translation;
+        
+        front.x = rotationMatrix1[2][0];
+        front.y = rotationMatrix1[2][1];
+        front.z = rotationMatrix1[2][2];
+        front = glm::normalize(front);
+
+        yaw1 = glm::degrees(atan2(front.z, front.x));
+        pitch1 = glm::degrees(asin(front.y));
+    }
+    // Calculate yaw and pitch from the rotation matrix
 
     std::cout << "Camera Position: (" << cameraPosition.x << ", " << cameraPosition.y << ", " << cameraPosition.z << ")" << std::endl;
     std::cout << "Yaw: " << yaw1 << std::endl;

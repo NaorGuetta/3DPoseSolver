@@ -6,24 +6,36 @@
 
 void renderScene();
 
+
 void renderNormalMode();
-void renderLeftNormalViewport();
+
+void renderLeftDebugViewport();
 void renderRightNormalViewport();
 
-void renderPickingMode();
-void renderLeftPickingViewport();
-void renderRightPickingViewport();
 
-void renderChooseMode();
-void renderLeftChooseViewport();
-void renderRightChooseViewport();
+void renderLoadingMode();
+
+void renderRightLoadingViewport();
+
+
+
 
 
 void drawDividerLine();
-glm::vec3 getClickedPoint(int x, int y);
+
 void setupRightViewport();
+
 void drawSpheres(const glm::vec3& threeDPoint, glm::vec3& color);
 
+void captureEstimateImages();
+
+
+
+void renderPoints();
+
+void renderText(float x, float y, const char* text, void* font);
+
+void setUpText(int x, const char* text);
 
 
 #endif // RENDER_UTILS_H

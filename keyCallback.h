@@ -11,7 +11,8 @@ void updateKeyUp(unsigned char key, int x, int y);
 void updateSpecialKeyState(int key, int x, int y);
 void updateSpecialKeyUp(int key, int x, int y);
 void keyCallback(unsigned char key, int x, int y);
-void handleChoosestateMode(unsigned char key);
+//void handleChoosestateMode(unsigned char key);
 void clearPointsPicked();
+void SaveEstimatedCapture();
 
 #endif // KEY_CALLBACK_H

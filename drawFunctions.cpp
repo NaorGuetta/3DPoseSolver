@@ -3,9 +3,10 @@
 
 void drawTeapot() {
     GLfloat materialAmbient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
-    GLfloat materialDiffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };  // Light color
+    GLfloat materialDiffuse[] = { 0.4f, 0.4f, 0.4f, 1.0f };  // Distinct teapot color (light gray)
     GLfloat materialSpecular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
     GLfloat materialShininess[] = { 50.0f };
+
 
     glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
