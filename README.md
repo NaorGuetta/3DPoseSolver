@@ -5,7 +5,9 @@ This project implements a 3D rendering system using OpenGL, The system estimates
 
 ## Outcome
 Below are some photos showcasing the results of our 3D rendering and pose estimation system:
- <><><><><><><><><
+### Teapot Scene Before and After EPnP Overlay
+![photo was taken:](https://github.com/NaorGuetta/3DPoseSolver/blob/master/3DSolverImg/image3.png)
+![Solve position and overlay result:](https://github.com/NaorGuetta/3DPoseSolver/blob/master/3DSolverImg/image4.png)
 
 ## Setup:
 To run this project, you'll need to have OpenGL and a C++ development environment.The project is configured to work with the EPnP algorithm for pose estimation.
