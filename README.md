@@ -1,6 +1,7 @@
 ## Introduction 
 This project was developed as part of a university project.
 This project implements a 3D rendering system using OpenGL, The system estimates camera poses based on 2D-3D correspondences using the EPnP algorithm and provides a visual overlay of the results.
+For the full report and results, you can find it [here](https://github.com/NaorGuetta/3DPoseSolver/blob/master/2D-3D%20Pose%20Estimation%20Mini-Project.pdf).
 
 
 ## Outcome
